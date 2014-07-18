@@ -9,7 +9,7 @@ In order to connect to Twitch IRC, you must have three pieces of information:
 
 1. The name of channel that you want to join.
 2. A Twitch account.
-3. Oauth token from API or from a site using it: www.twitchapps.com/tmi 
+3. An Oauth token from [API](dev.twitch.tv) or from a site utilizing the API such as [TwitchApps](www.twitchapps.com/tmi)
 
 ## Connecting
 Once you have that information, you can then take it to connect to Twitch IRC with the following bits of information:
@@ -18,9 +18,11 @@ Once you have that information, you can then take it to connect to Twitch IRC wi
 - The port to connect to is *6667*.
 - SSL **is not** supported for Twitch IRC.
 - Your nickname must be your Twitch nickname
-- Your password should be an OAuth token with the `chat_login` scope. The token must have the prefix of `oauth:`. For example, if you have the token `abcd`, you send `oauth:abcd`. You can get a token for your account with this helpful [page](http://twitchapps.com/tmi/) (thanks to [Andrew Bashore](https://github.com/bashtech)!).
+- Your password should be an OAuth token. You can get you OAuth token [here](http://twitchapps.com/tmi/) (thanks Andrew Bashore!).
 
 ## Upon a Successful Connection
+**Note: Lines prefixed with < are sent from client to server, and lines prefixed with > are sent from the server to the connecting client.**
+
 A successful connection session will look something like this:
 ```
 < PASS oauth:twitch_oauth_token
@@ -42,11 +44,17 @@ If your connection fails for any reason, you will be disconnected from the serve
 - Connecting on the wrong port
 - Connecting to the wrong server
 - Using an incorrect username and/or password
+- Going over the JOIN or AUTH rate limits.
  
 ## Command & Message Limit
 - If you send more than 20 commands or messages to the server within a 30 second period, you will get locked out for 8 hours automatically. These are **not** lifted so please be careful when working with IRC!
+- Mods can type 100 messages in a channel before hitting this rate limit. If a message is sent to a room in which your global message count is already too high, you will be disconnected.
+- JOINs are rate-limited to 50 JOINs per 15 seconds. Additional JOINs sent after this will cause an unsuccessful login.
 
 ## Commands you can send
+Most normal chat commands like /timeout, /ban, /clear are sent with periods in place of the forward slash. For example, to ban the user "xangold", you would send ".ban xangold" to the server (minus the quotes).
+
+
 If you send an invalid command, you will receive a 421 numeric back:
 ```
 < CAP REQ :multi-prefix
@@ -81,7 +89,7 @@ After a successful JOIN, the following will take place:
 < PART #channelname
 > PART #channelname
 ````
-### WHO: Obtaining a detailed list of users
+### WHO: Obtaining a detailed list of users (currently deprecated)
 **WHO** *#channel*
 ```
 < WHO #channelname
